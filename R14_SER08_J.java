@@ -1,14 +1,24 @@
-try {
-    ZoneInfo zi = (ZoneInfo) AccessController.doPrivileged(
-      new PrivilegedExceptionAction() {
-        public Object run() throws Exception {
-          return input.readObject();
-        }
+private static class CalendarAccessControlContext {
+  private static final AccessControlContext INSTANCE;
+  static {
+    RuntimePermission perm = new RuntimePermission("accessClassInPackage.sun.util.calendar");
+    PermissionCollection perms = perm.newPermissionCollection();
+    perms.add(perm);
+    INSTANCE = new AccessControlContext(new ProtectionDomain[] {
+        new ProtectionDomain(null, perms)
     });
-    if (zi != null) {
-      zone = zi;
-    }
-  } catch (Exception e)
+  }}
+
+  // ...
+  try{zi=AccessController.doPrivileged(new PrivilegedExceptionAction<ZoneInfo>(){
+
+  public ZoneInfo run() throws Exception {
+    return (ZoneInfo) input.readObject();
+  }},CalendarAccessControlContext.INSTANCE);}catch(
+
+  PrivilegedActionException pae)
   {
-    // Handle error
-  }
+    /* ... */ }if(zi!=null)
+  {
+  zone = zi;
+}

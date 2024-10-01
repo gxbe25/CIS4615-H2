@@ -1,11 +1,11 @@
 final class Flag {
-    private volatile boolean flag = true;
+    private boolean flag = true;
 
-    public void toggle() { // Unsafe
+    public synchronized void toggle() {
         flag ^= true;
     }
 
-    public boolean getFlag() { // Safe
+    public synchronized boolean getFlag() {
         return flag;
     }
 }
